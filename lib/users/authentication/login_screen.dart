@@ -53,7 +53,7 @@ class _LoginState extends State<LoginScreen> {
         }
       }
     } catch (e) {
-      print("Error" + e.toString());
+      Fluttertoast.showToast(msg: "Błąd");
     }
   }
 

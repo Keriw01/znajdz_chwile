@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:znajdz_chwile/pages/home.dart';
 import 'package:znajdz_chwile/users/authentication/login_screen.dart';
+import 'package:znajdz_chwile/users/userPreferences/user_preferences.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,12 +17,15 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Znajdz Chwilę',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: FutureBuilder(builder: (context, dataSnapShot) {
-        return const LoginScreen();
-      }),
+      home: FutureBuilder(
+          future: RememberUserPrefs.readUserInfo(),
+          builder: (context, dataSnapShot) {
+            if (dataSnapShot.data == null) {
+              return const LoginScreen();
+            } else {
+              return const Home();
+            }
+          }),
     );
   }
 }
