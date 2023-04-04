@@ -1,5 +1,6 @@
 class API {
-  static const hostConnect = "http://192.168.100.10/api_znajdz_chwile";
+  static const hostConnect =
+      "https://znajdzchwile.000webhostapp.com/api_znajdz_chwile";
   static const hostConnectUser = "$hostConnect/user";
 
   //User signUp/Login
