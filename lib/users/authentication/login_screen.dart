@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:znajdz_chwile/colors/colors.dart';
 import 'package:znajdz_chwile/users/authentication/signup_screen.dart';
@@ -11,7 +10,7 @@ import 'package:znajdz_chwile/users/userPreferences/user_preferences.dart';
 
 import '../../api_connection/api_connection.dart';
 import '../../pages/home.dart';
-import '../model/user.dart';
+import '../../models/user.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -66,11 +65,9 @@ class _LoginState extends State<LoginScreen> {
           return ConstrainedBox(
             constraints: BoxConstraints(minHeight: cons.maxHeight),
             child: SingleChildScrollView(
+              reverse: true,
               child: Column(
                 children: [
-                  const SizedBox(
-                    height: 10,
-                  ),
                   const Text(
                     "Znajdź chwilę !",
                     style: TextStyle(
