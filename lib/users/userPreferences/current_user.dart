@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:znajdz_chwile/users/model/user.dart';
+import 'package:znajdz_chwile/models/user.dart';
 import 'package:znajdz_chwile/users/userPreferences/user_preferences.dart';
 
 class CurrentUser extends GetxController {
