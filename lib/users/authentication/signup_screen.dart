@@ -54,7 +54,7 @@ class _LoginState extends State<SignUpScreen> {
       if (response.statusCode == 200) {
         var responseBodyOfSignUp = jsonDecode(response.body);
         if (responseBodyOfSignUp['success'] == true) {
-          Get.to(const LoginScreen());
+          Get.off(const LoginScreen());
           setState(() {
             nameController.clear();
             emailController.clear();
@@ -268,7 +268,7 @@ class _LoginState extends State<SignUpScreen> {
                               padding: const EdgeInsets.only(top: 10),
                               child: TextButton(
                                   onPressed: () {
-                                    Get.to(const LoginScreen());
+                                    Get.off(const LoginScreen());
                                   },
                                   style: ButtonStyle(
                                     overlayColor: MaterialStateProperty.all(

@@ -41,7 +41,7 @@ class _LoginState extends State<LoginScreen> {
           User userInfo = User.fromJson(responseBodyOfLogin["userData"]);
           await RememberUserPrefs.storeUserInfo(userInfo);
           Future.delayed(const Duration(milliseconds: 2000), () {
-            Get.to(const Home());
+            Get.off(const Home());
           });
           setState(() {
             emailController.clear();
@@ -216,7 +216,7 @@ class _LoginState extends State<LoginScreen> {
                               padding: const EdgeInsets.only(top: 10),
                               child: TextButton(
                                   onPressed: () {
-                                    Get.to(const SignUpScreen());
+                                    Get.off(const SignUpScreen());
                                   },
                                   style: ButtonStyle(
                                     overlayColor: MaterialStateProperty.all(
