@@ -11,7 +11,7 @@ import 'package:znajdz_chwile/users/userPreferences/user_preferences.dart';
 
 import '../../api_connection/api_connection.dart';
 import '../../pages/home.dart';
-import '../model/user.dart';
+import '../../model/user.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -38,16 +38,18 @@ class _LoginState extends State<LoginScreen> {
       if (response.statusCode == 200) {
         var responseBodyOfLogin = jsonDecode(response.body);
         if (responseBodyOfLogin['success'] == true) {
-          Fluttertoast.showToast(msg: "Logowanie powiodło się.");
           User userInfo = User.fromJson(responseBodyOfLogin["userData"]);
           await RememberUserPrefs.storeUserInfo(userInfo);
           Future.delayed(const Duration(milliseconds: 2000), () {
-            Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: ((context) => const Home())),
-                (route) => false);
+            //Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: ((context) => const Home())),(route) => false);
 
-            //Get.to(Home());
+            Get.to(const Home());
           });
+          setState(() {
+            emailController.clear();
+            passwordController.clear();
+          });
+          Fluttertoast.showToast(msg: "Logowanie powiodło się.");
         } else {
           Fluttertoast.showToast(msg: "Błąd, podaj poprawne dane");
         }
@@ -64,12 +66,13 @@ class _LoginState extends State<LoginScreen> {
         backgroundColor: color2,
         body: LayoutBuilder(builder: (context, cons) {
           return ConstrainedBox(
-            constraints: BoxConstraints(minHeight: cons.maxHeight),
+            constraints: const BoxConstraints(minHeight: 0),
             child: SingleChildScrollView(
+              reverse: true,
               child: Column(
                 children: [
                   const SizedBox(
-                    height: 10,
+                    height: 20,
                   ),
                   const Text(
                     "Znajdź chwilę !",
@@ -79,16 +82,16 @@ class _LoginState extends State<LoginScreen> {
                         fontWeight: FontWeight.w700),
                   ),
                   const SizedBox(
-                    height: 40,
+                    height: 20,
                   ),
                   SizedBox(
                     width: MediaQuery.of(context).size.width,
-                    height: 200,
+                    height: 250,
                     child: SvgPicture.asset(
                         "assets/images/undraw_time_management.svg"),
                   ),
                   const SizedBox(
-                    height: 30,
+                    height: 20,
                   ),
                   Container(
                     decoration: const BoxDecoration(),
@@ -100,7 +103,7 @@ class _LoginState extends State<LoginScreen> {
                             children: [
                               Padding(
                                 padding:
-                                    const EdgeInsets.fromLTRB(55, 0, 55, 5),
+                                    const EdgeInsets.fromLTRB(55, 0, 55, 10),
                                 child: TextFormField(
                                   controller: emailController,
                                   keyboardType: TextInputType.emailAddress,
@@ -139,7 +142,7 @@ class _LoginState extends State<LoginScreen> {
                               ),
                               Padding(
                                 padding:
-                                    const EdgeInsets.fromLTRB(55, 20, 55, 5),
+                                    const EdgeInsets.fromLTRB(55, 10, 55, 10),
                                 child: TextFormField(
                                   controller: passwordController,
                                   keyboardType: TextInputType.emailAddress,
@@ -178,7 +181,7 @@ class _LoginState extends State<LoginScreen> {
                                 ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.only(top: 20),
+                                padding: const EdgeInsets.only(top: 10),
                                 child: ElevatedButton(
                                   onPressed: () {
                                     if (formKey.currentState!.validate()) {
@@ -215,11 +218,8 @@ class _LoginState extends State<LoginScreen> {
                               padding: const EdgeInsets.only(top: 10),
                               child: TextButton(
                                   onPressed: () {
-                                    Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: ((context) =>
-                                                const SignUpScreen())));
-                                    //Get.to(const SignUpScreen());
+                                    //Navigator.of(context).push(MaterialPageRoute( builder: ((context) =>const SignUpScreen())));
+                                    Get.to(const SignUpScreen());
                                   },
                                   style: ButtonStyle(
                                     overlayColor: MaterialStateProperty.all(

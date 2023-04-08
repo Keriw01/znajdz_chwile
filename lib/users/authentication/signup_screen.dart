@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -8,12 +7,12 @@ import 'package:http/http.dart' as http;
 import 'package:znajdz_chwile/api_connection/api_connection.dart';
 import 'package:znajdz_chwile/colors/colors.dart';
 import 'package:znajdz_chwile/users/authentication/login_screen.dart';
-
-import '../model/user.dart';
+import '../../model/user.dart';
+import '../../pages/home.dart';
+import '../userPreferences/user_preferences.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
-
   @override
   State<SignUpScreen> createState() => _LoginState();
 }
@@ -34,7 +33,7 @@ class _LoginState extends State<SignUpScreen> {
         'user_email': emailController.text.trim(),
       });
       if (response.statusCode ==
-          200) // HTTP 200 OK success status of connection with api to server
+          200) // HTTP 200 - OK success status of connection with api to server
       {
         var responseBodyOfValidateEmail = jsonDecode(response.body);
         if (responseBodyOfValidateEmail['emailFound'] == true) {
@@ -44,7 +43,6 @@ class _LoginState extends State<SignUpScreen> {
         }
       }
     } catch (e) {
-      print(e.toString());
       Fluttertoast.showToast(msg: e.toString());
     }
   }
@@ -58,18 +56,18 @@ class _LoginState extends State<SignUpScreen> {
       if (response.statusCode == 200) {
         var responseBodyOfSignUp = jsonDecode(response.body);
         if (responseBodyOfSignUp['success'] == true) {
-          Fluttertoast.showToast(msg: "Rejestracja powiodła się.");
+          Get.to(const LoginScreen());
           setState(() {
             nameController.clear();
             emailController.clear();
             passwordController.clear();
           });
+          Fluttertoast.showToast(msg: "Rejestracja powiodła się.");
         } else {
           Fluttertoast.showToast(msg: "Błąd, spróbuj ponownie");
         }
       }
     } catch (e) {
-      print(e.toString());
       Fluttertoast.showToast(msg: e.toString());
     }
   }
@@ -81,12 +79,13 @@ class _LoginState extends State<SignUpScreen> {
         backgroundColor: color2,
         body: LayoutBuilder(builder: (context, cons) {
           return ConstrainedBox(
-            constraints: BoxConstraints(minHeight: cons.maxHeight),
+            constraints: const BoxConstraints(minHeight: 0),
             child: SingleChildScrollView(
+              reverse: true,
               child: Column(
                 children: [
                   const SizedBox(
-                    height: 10,
+                    height: 20,
                   ),
                   const Text(
                     "Znajdź chwilę !",
@@ -96,16 +95,16 @@ class _LoginState extends State<SignUpScreen> {
                         fontWeight: FontWeight.w700),
                   ),
                   const SizedBox(
-                    height: 40,
+                    height: 20,
                   ),
                   SizedBox(
                     width: MediaQuery.of(context).size.width,
-                    height: 200,
+                    height: 250,
                     child: SvgPicture.asset(
                         "assets/images/undraw_time_management.svg"),
                   ),
                   const SizedBox(
-                    height: 30,
+                    height: 20,
                   ),
                   Container(
                     decoration: const BoxDecoration(),
@@ -117,7 +116,7 @@ class _LoginState extends State<SignUpScreen> {
                             children: [
                               Padding(
                                 padding:
-                                    const EdgeInsets.fromLTRB(55, 0, 55, 5),
+                                    const EdgeInsets.fromLTRB(55, 0, 55, 10),
                                 child: TextFormField(
                                   controller: nameController,
                                   validator: (value) {
@@ -155,7 +154,7 @@ class _LoginState extends State<SignUpScreen> {
                               ),
                               Padding(
                                 padding:
-                                    const EdgeInsets.fromLTRB(55, 15, 55, 5),
+                                    const EdgeInsets.fromLTRB(55, 10, 55, 10),
                                 child: TextFormField(
                                   controller: emailController,
                                   keyboardType: TextInputType.emailAddress,
@@ -195,7 +194,7 @@ class _LoginState extends State<SignUpScreen> {
                               ),
                               Padding(
                                 padding:
-                                    const EdgeInsets.fromLTRB(55, 15, 55, 5),
+                                    const EdgeInsets.fromLTRB(55, 10, 55, 10),
                                 child: TextFormField(
                                   controller: passwordController,
                                   keyboardType: TextInputType.emailAddress,
@@ -234,7 +233,7 @@ class _LoginState extends State<SignUpScreen> {
                                 ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.only(top: 15),
+                                padding: const EdgeInsets.only(top: 10),
                                 child: ElevatedButton(
                                   onPressed: () {
                                     if (formKey.currentState!.validate()) {
@@ -268,14 +267,11 @@ class _LoginState extends State<SignUpScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.only(top: 15),
+                              padding: const EdgeInsets.only(top: 10),
                               child: TextButton(
                                   onPressed: () {
-                                    Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: ((context) =>
-                                                const LoginScreen())));
-                                    //Get.to(const LoginScreen());
+                                    //Navigator.of(context).push(MaterialPageRoute(builder: ((context) =>const LoginScreen())));
+                                    Get.to(const LoginScreen());
                                   },
                                   style: ButtonStyle(
                                     overlayColor: MaterialStateProperty.all(

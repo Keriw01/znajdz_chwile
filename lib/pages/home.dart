@@ -43,7 +43,7 @@ class _HomeState extends State<Home> {
     },
   ];
 
-  final RxInt _indexNumber = 0.obs;
+  final RxInt _indexNumber = 1.obs;
 
   @override
   Widget build(BuildContext context) {

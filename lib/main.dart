@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:znajdz_chwile/pages/home.dart';
+import 'package:znajdz_chwile/services/local_notice_service.dart';
 import 'package:znajdz_chwile/users/authentication/login_screen.dart';
 import 'package:znajdz_chwile/users/userPreferences/user_preferences.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  NotificationService().initNotification();
   runApp(const MyApp());
 }
 
