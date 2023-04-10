@@ -184,7 +184,7 @@ class _HomeSecondState extends State<HomeSecond> {
             ),
             ElevatedButton(
                 onPressed: () {
-                  /*addEvent();
+                  addEvent();
                   String eventStartDescription =
                       "Nadszedł czas na ${_eventTitleController.text}\n${_eventDescriptionController.text}";
                   NotificationService().showNotification(
@@ -199,8 +199,8 @@ class _HomeSecondState extends State<HomeSecond> {
                       2,
                       _eventTitleController.text,
                       eventEndDescription,
-                      _eventDateEnd);*/
-                  print(_currentUser.user.user_name);
+                      _eventDateEnd);
+                  //print(_currentUser.user.user_name);
                 },
                 child: const Text("Dodaj")),
           ],
