@@ -11,4 +11,5 @@ class API {
   static const eventCheck = "$hostConnect/event/check_event.php";
   static const eventDelete = "$hostConnect/event/delete_event.php";
   static const eventUpdate = "$hostConnect/event/update_event.php";
+  static const eventAdd = "$hostConnect/event/add_event.php";
 }

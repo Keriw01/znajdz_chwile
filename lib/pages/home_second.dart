@@ -157,14 +157,14 @@ class _HomeSecondState extends State<HomeSecond> {
                   ),
                   event.event_date_start != event.event_date_end
                       ? Text(
-                          "${event.event_date_start.hour}:${event.event_date_start.minute} - ${event.event_date_end.hour}:${event.event_date_end.minute} ${event.event_date_end.day}-${event.event_date_end.month}-${event.event_date_end.year}",
+                          "${DateFormat('HH:mm').format(event.event_date_start)} - ${DateFormat('HH:mm dd-MM-yyyy').format(event.event_date_end)}",
                           style: const TextStyle(
                               fontSize: 14,
                               fontFamily: 'Montserrat',
                               color: color7),
                         )
-                      : Text(
-                          "${event.event_date_start.hour}:${event.event_date_start.minute}",
+                      : Text(DateFormat('HH:mm').format(event.event_date_start),
+                          //"${event.event_date_start.hour}:${event.event_date_start.minute}",
                           style: const TextStyle(
                               fontSize: 14,
                               fontFamily: 'Montserrat',

@@ -12,43 +12,26 @@ import 'package:znajdz_chwile/pages/home_second.dart';
 import 'package:intl/intl.dart';
 
 import '../models/event.dart';
+import '../models/user.dart';
+import '../users/userPreferences/user_preferences.dart';
 
-class EditEventPage extends StatefulWidget {
-  const EditEventPage({Key? key, required this.event}) : super(key: key);
-  final Event event;
+class AddEventPage extends StatefulWidget {
+  const AddEventPage({Key? key}) : super(key: key);
   @override
-  State<EditEventPage> createState() => _EditEventPageState();
+  State<AddEventPage> createState() => _AddEventPageState();
 }
 
-class _EditEventPageState extends State<EditEventPage> {
+class _AddEventPageState extends State<AddEventPage> {
   var formKey = GlobalKey<FormState>();
-  late TextEditingController _eventTitleController;
-  late TextEditingController _eventDescriptionController;
-  late TextEditingController _eventDateStartController;
-  late TextEditingController _eventDateEndController;
+  final _eventTitleController = TextEditingController();
+  final _eventDescriptionController = TextEditingController();
+  final _eventDateStartController = TextEditingController();
+  final _eventDateEndController = TextEditingController();
 
   DateTime _eventDateStart = DateTime.now();
   DateTime _eventDateEnd = DateTime.now();
   bool _eventNotification = false;
   int _eventHaveNotification = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _eventTitleController =
-        TextEditingController(text: widget.event.event_title.toString());
-    _eventDescriptionController =
-        TextEditingController(text: widget.event.event_description.toString());
-    _eventDateStartController = TextEditingController(
-        text: DateFormat('HH:mm dd-MM-yyyy')
-            .format(widget.event.event_date_start));
-    _eventDateEndController = TextEditingController(
-        text:
-            DateFormat('HH:mm dd-MM-yyyy').format(widget.event.event_date_end));
-    widget.event.event_notification.toString() == "1"
-        ? _eventNotification = true
-        : _eventNotification = false;
-  }
 
   static const OutlineInputBorder borderInput = OutlineInputBorder(
       borderRadius: BorderRadius.all(
@@ -56,23 +39,26 @@ class _EditEventPageState extends State<EditEventPage> {
       ),
       borderSide: BorderSide.none);
 
-  updateEvent(Event event) async {
+  addEvent() async {
+    Future<User?> userInfo = RememberUserPrefs.readUserInfo();
+    User? currentUserInfo = await userInfo;
+
     Event eventModel = Event(
-        event.event_id,
-        event.user_id,
+        1,
+        currentUserInfo!.user_id,
         _eventTitleController.text.trim(),
         _eventDescriptionController.text.trim(),
         _eventDateStart,
         _eventDateEnd,
-        event.event_is_done,
+        0,
         _eventHaveNotification);
     try {
-      var response = await http.post(Uri.parse(API.eventUpdate),
-          body: eventModel.toJson());
+      var response =
+          await http.post(Uri.parse(API.eventAdd), body: eventModel.toJson());
       if (response.statusCode == 200) {
-        var responseBodyOfEditEvent = jsonDecode(response.body);
-        if (responseBodyOfEditEvent["success"] == true) {
-          Fluttertoast.showToast(msg: "Edytowano zdarzenie.");
+        var responseBodyOfAddEvent = jsonDecode(response.body);
+        if (responseBodyOfAddEvent["success"] == true) {
+          Fluttertoast.showToast(msg: "Dodano zdarzenie.");
           setState(() {
             _eventTitleController.clear();
             _eventDescriptionController.clear();
@@ -96,7 +82,7 @@ class _EditEventPageState extends State<EditEventPage> {
         backgroundColor: color2,
         appBar: AppBar(
           centerTitle: true,
-          title: const Text("Edytuj zdarzenie",
+          title: const Text("Dodaj zdarzenie",
               style: TextStyle(
                   fontSize: 24,
                   color: Colors.white,
@@ -291,7 +277,7 @@ class _EditEventPageState extends State<EditEventPage> {
               ElevatedButton(
                 onPressed: () async {
                   if (formKey.currentState!.validate()) {
-                    await updateEvent(widget.event);
+                    await addEvent();
                     Get.offAll(const Home());
                   }
                 },
@@ -304,7 +290,7 @@ class _EditEventPageState extends State<EditEventPage> {
                             borderRadius:
                                 BorderRadius.all(Radius.circular(20.0))))),
                 child: const Text(
-                  'Zapisz',
+                  'Dodaj',
                   style: TextStyle(
                       fontSize: 20,
                       fontFamily: 'Segoe UI',

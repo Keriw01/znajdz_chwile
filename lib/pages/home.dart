@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:znajdz_chwile/colors/colors.dart';
+import 'package:znajdz_chwile/pages/add_event.dart';
 import 'package:znajdz_chwile/pages/settings.dart';
 import 'package:znajdz_chwile/pages/stats.dart';
 import 'package:znajdz_chwile/users/userPreferences/current_user.dart';
@@ -81,7 +82,9 @@ class _HomeState extends State<Home> {
               floatingActionButton: Obx(() => Visibility(
                     visible: _indexNumber.value == 1 ? true : false,
                     child: FloatingActionButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Get.to(AddEventPage());
+                      },
                       backgroundColor: color6,
                       child: const Icon(
                         Icons.add,
