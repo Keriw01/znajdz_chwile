@@ -40,7 +40,7 @@ class _LoginState extends State<LoginScreen> {
         if (responseBodyOfLogin['success'] == true) {
           User userInfo = User.fromJson(responseBodyOfLogin["userData"]);
           await RememberUserPrefs.storeUserInfo(userInfo);
-          Future.delayed(const Duration(milliseconds: 2000), () {
+          Future.delayed(const Duration(milliseconds: 1000), () {
             Get.off(const Home());
           });
           setState(() {

@@ -20,6 +20,8 @@ dependencies:
   fluttertoast: ^8.2.1
   shared_preferences: ^2.0.20
   font_awesome_flutter: ^10.4.0
+  table_calendar: ^3.0.9
+  flutter_datetime_picker: ^1.5.1
 
 dev_dependencies:
   flutter_test:
