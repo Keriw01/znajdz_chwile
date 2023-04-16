@@ -2,6 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:znajdz_chwile/api_connection/api_connection.dart';
@@ -10,10 +13,14 @@ import 'package:http/http.dart' as http;
 import 'package:znajdz_chwile/pages/home.dart';
 import 'package:znajdz_chwile/pages/home_second.dart';
 import 'package:intl/intl.dart';
+import 'package:znajdz_chwile/services/local_notice_service.dart';
 
 import '../models/event.dart';
 import '../models/user.dart';
 import '../users/userPreferences/user_preferences.dart';
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 class AddEventPage extends StatefulWidget {
   const AddEventPage({Key? key}) : super(key: key);
@@ -22,6 +29,12 @@ class AddEventPage extends StatefulWidget {
 }
 
 class _AddEventPageState extends State<AddEventPage> {
+  @override
+  void initState() {
+    tz.initializeTimeZones();
+    super.initState();
+  }
+
   var formKey = GlobalKey<FormState>();
   final _eventTitleController = TextEditingController();
   final _eventDescriptionController = TextEditingController();
@@ -58,7 +71,31 @@ class _AddEventPageState extends State<AddEventPage> {
       if (response.statusCode == 200) {
         var responseBodyOfAddEvent = jsonDecode(response.body);
         if (responseBodyOfAddEvent["success"] == true) {
-          Fluttertoast.showToast(msg: "Dodano zdarzenie.");
+          //trzeba znalezc max id w bazie i przekazac do ID powiadomienia
+          // var responseEventId = await http.post(Uri.parse(API.getLastEventId),
+          //   body: {'user_id': currentUserInfo.user_id});
+          // var responseOfEventId = jsonDecode(responseEventId.body);
+
+          // if (responseOfEventId["success"] == true) {
+          //  var event_id = responseOfEventId["eventData"];
+          // print(event_id);
+          //}
+
+          if (_eventHaveNotification == 1) {
+            String eventStartDescription =
+                "Nadszedł czas na ${_eventTitleController.text}\n${_eventDescriptionController.text}";
+            NotificationService().showNotification(
+                1,
+                _eventTitleController.text,
+                eventStartDescription,
+                _eventDateStart);
+
+            String eventEndDescription =
+                "Koniec czasu na ${_eventTitleController.text}\n${_eventDescriptionController.text}";
+            NotificationService().showNotification(2,
+                _eventTitleController.text, eventEndDescription, _eventDateEnd);
+          }
+
           setState(() {
             _eventTitleController.clear();
             _eventDescriptionController.clear();
@@ -67,6 +104,7 @@ class _AddEventPageState extends State<AddEventPage> {
             _eventNotification = false;
             _eventHaveNotification = 0;
           });
+          Fluttertoast.showToast(msg: "Dodano zdarzenie.");
         } else {
           Fluttertoast.showToast(msg: "Błąd, spróbuj ponownie");
         }
