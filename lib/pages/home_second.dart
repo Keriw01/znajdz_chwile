@@ -110,27 +110,28 @@ class _HomeSecondState extends State<HomeSecond> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    event.event_is_done == 1
-                        ? GestureDetector(
-                            onTap: () {
-                              eventCheckBoxHandle(event);
-                            },
-                            child: const Icon(
-                              Icons.check_box,
-                              size: 40,
-                              color: color3,
-                            ),
-                          )
-                        : GestureDetector(
-                            onTap: () {
-                              eventCheckBoxHandle(event);
-                            },
-                            child: const Icon(
-                              Icons.square,
-                              size: 40,
-                              color: color3,
-                            ),
-                          ),
+                    if (event.event_is_done == 1)
+                      GestureDetector(
+                        onTap: () {
+                          eventCheckBoxHandle(event);
+                        },
+                        child: const Icon(
+                          Icons.check_box,
+                          size: 40,
+                          color: color3,
+                        ),
+                      )
+                    else
+                      GestureDetector(
+                        onTap: () {
+                          eventCheckBoxHandle(event);
+                        },
+                        child: const Icon(
+                          Icons.square,
+                          size: 40,
+                          color: color3,
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -148,27 +149,49 @@ class _HomeSecondState extends State<HomeSecond> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    event.event_title,
-                    style: const TextStyle(
-                        fontSize: 18,
-                        fontFamily: 'OpenSans',
-                        fontWeight: FontWeight.bold),
-                  ),
-                  event.event_date_start != event.event_date_end
-                      ? Text(
-                          "${DateFormat('HH:mm').format(event.event_date_start)} - ${DateFormat('HH:mm dd-MM-yyyy').format(event.event_date_end)}",
+                  if (event.event_is_done == 1)
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Text(
+                          event.event_title,
                           style: const TextStyle(
-                              fontSize: 14,
-                              fontFamily: 'Montserrat',
-                              color: color7),
-                        )
-                      : Text(DateFormat('HH:mm').format(event.event_date_start),
-                          //"${event.event_date_start.hour}:${event.event_date_start.minute}",
+                              fontSize: 18,
+                              fontFamily: 'OpenSans',
+                              fontWeight: FontWeight.bold,
+                              decorationThickness: 3,
+                              decoration: TextDecoration.lineThrough),
+                        ),
+                      ),
+                    )
+                  else
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Text(
+                          event.event_title,
                           style: const TextStyle(
-                              fontSize: 14,
-                              fontFamily: 'Montserrat',
-                              color: color7)),
+                            fontSize: 18,
+                            fontFamily: 'OpenSans',
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  if (event.event_date_start != event.event_date_end)
+                    Text(
+                      "${DateFormat('HH:mm').format(event.event_date_start)} - ${DateFormat('HH:mm dd-MM-yyyy').format(event.event_date_end)}",
+                      style: const TextStyle(
+                          fontSize: 14,
+                          fontFamily: 'Montserrat',
+                          color: color7),
+                    )
+                  else
+                    Text(DateFormat('HH:mm').format(event.event_date_start),
+                        style: const TextStyle(
+                            fontSize: 14,
+                            fontFamily: 'Montserrat',
+                            color: color7)),
                   Expanded(
                       child: SingleChildScrollView(
                           scrollDirection: Axis.vertical,
@@ -276,85 +299,89 @@ class _HomeSecondState extends State<HomeSecond> {
   @override
   Widget build(BuildContext context) {
     initializeDateFormatting('pl_PL', null);
-    return Column(
-      children: [
-        Container(
-          decoration: const BoxDecoration(
-              color: color6,
-              borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(30.0),
-                  bottomRight: Radius.circular(30.0))),
-          child: TableCalendar(
-            locale: 'pl_PL',
-            firstDay: DateTime.utc(2023, 1, 1),
-            lastDay: DateTime.utc(2030, 3, 14),
-            focusedDay: _focusedDay,
-            calendarFormat: _calendarFormat,
-            availableCalendarFormats: const {
-              CalendarFormat.week: 'Tydzień',
-              CalendarFormat.twoWeeks: '2 Tygodnie',
-              CalendarFormat.month: 'Miesiąc',
-            },
-            selectedDayPredicate: (day) {
-              return isSameDay(_selectedDay, day);
-            },
-            onDaySelected: (selectedDay, focusedDay) {
-              if (!isSameDay(_selectedDay, selectedDay)) {
-                setState(() {
-                  _selectedDay = selectedDay;
-                  _focusedDay = focusedDay;
-                });
-                eventListJson().then((value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 35.0),
+      child: Column(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+                color: color6,
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(30.0),
+                    bottomRight: Radius.circular(30.0))),
+            child: TableCalendar(
+              locale: 'pl_PL',
+              firstDay: DateTime.utc(2023, 1, 1),
+              lastDay: DateTime.utc(2030, 3, 14),
+              focusedDay: _focusedDay,
+              calendarFormat: _calendarFormat,
+              availableCalendarFormats: const {
+                CalendarFormat.week: 'Tydzień',
+                CalendarFormat.twoWeeks: '2 Tygodnie',
+                CalendarFormat.month: 'Miesiąc',
+              },
+              selectedDayPredicate: (day) {
+                return isSameDay(_selectedDay, day);
+              },
+              onDaySelected: (selectedDay, focusedDay) {
+                if (!isSameDay(_selectedDay, selectedDay)) {
                   setState(() {
-                    eventList.clear();
-                    eventList.addAll(value);
+                    _selectedDay = selectedDay;
+                    _focusedDay = focusedDay;
                   });
-                });
-              }
-            },
-            onFormatChanged: (format) {
-              if (_calendarFormat != format) {
-                setState(() {
-                  _calendarFormat = format;
-                });
-              }
-            },
-            onPageChanged: (focusedDay) {
-              _focusedDay = focusedDay;
-            },
-            startingDayOfWeek: StartingDayOfWeek.monday,
-            calendarStyle: const CalendarStyle(
-                withinRangeTextStyle: TextStyle(color: Colors.red),
-                outsideTextStyle:
-                    TextStyle(color: Color.fromARGB(193, 151, 151, 151)),
-                weekendTextStyle: TextStyle(color: color7),
-                defaultTextStyle: TextStyle(color: Colors.black),
-                todayDecoration:
-                    BoxDecoration(color: color7, shape: BoxShape.circle),
-                todayTextStyle: TextStyle(color: Colors.white),
-                selectedDecoration:
-                    BoxDecoration(color: color2, shape: BoxShape.circle),
-                selectedTextStyle: TextStyle(color: Colors.black)),
-            daysOfWeekStyle:
-                DaysOfWeekStyle(weekdayStyle: TextStyle(color: Colors.black)),
+                  eventListJson().then((value) {
+                    setState(() {
+                      eventList.clear();
+                      eventList.addAll(value);
+                    });
+                  });
+                }
+              },
+              onFormatChanged: (format) {
+                if (_calendarFormat != format) {
+                  setState(() {
+                    _calendarFormat = format;
+                  });
+                }
+              },
+              onPageChanged: (focusedDay) {
+                _focusedDay = focusedDay;
+              },
+              startingDayOfWeek: StartingDayOfWeek.monday,
+              calendarStyle: const CalendarStyle(
+                  withinRangeTextStyle: TextStyle(color: Colors.red),
+                  outsideTextStyle:
+                      TextStyle(color: Color.fromARGB(193, 151, 151, 151)),
+                  weekendTextStyle: TextStyle(color: color7),
+                  defaultTextStyle: TextStyle(color: Colors.black),
+                  todayDecoration:
+                      BoxDecoration(color: color7, shape: BoxShape.circle),
+                  todayTextStyle: TextStyle(color: Colors.white),
+                  selectedDecoration:
+                      BoxDecoration(color: color2, shape: BoxShape.circle),
+                  selectedTextStyle: TextStyle(color: Colors.black)),
+              daysOfWeekStyle:
+                  DaysOfWeekStyle(weekdayStyle: TextStyle(color: Colors.black)),
+            ),
           ),
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20.0),
-          child: dateHeader(_focusedDay),
-        ),
-        Expanded(
-          child: ListView.builder(
-            itemBuilder: (context, index) {
-              return eventCustomElementOfList(eventList[index]);
-            },
-            itemCount: eventList.length,
+          const SizedBox(
+            height: 20,
           ),
-        ),
-      ],
+          Padding(
+            padding:
+                const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20.0),
+            child: dateHeader(_focusedDay),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemBuilder: (context, index) {
+                return eventCustomElementOfList(eventList[index]);
+              },
+              itemCount: eventList.length,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -17,6 +17,7 @@ import 'package:znajdz_chwile/services/local_notice_service.dart';
 
 import '../models/event.dart';
 import '../models/user.dart';
+import '../models/notification.dart';
 import '../users/userPreferences/user_preferences.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -71,31 +72,74 @@ class _AddEventPageState extends State<AddEventPage> {
       if (response.statusCode == 200) {
         var responseBodyOfAddEvent = jsonDecode(response.body);
         if (responseBodyOfAddEvent["success"] == true) {
-          //trzeba znalezc max id w bazie i przekazac do ID powiadomienia
-          // var responseEventId = await http.post(Uri.parse(API.getLastEventId),
-          //   body: {'user_id': currentUserInfo.user_id});
-          // var responseOfEventId = jsonDecode(responseEventId.body);
+          Fluttertoast.showToast(msg: "Dodano zdarzenie.");
+        } else {
+          Fluttertoast.showToast(msg: "Błąd, spróbuj ponownie");
+        }
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: e.toString());
+    }
+  }
 
-          // if (responseOfEventId["success"] == true) {
-          //  var event_id = responseOfEventId["eventData"];
-          // print(event_id);
-          //}
+  addNotification() async {
+    Future<User?> userInfo = RememberUserPrefs.readUserInfo();
+    User? currentUserInfo = await userInfo;
+    late int eventLastId;
+    try {
+      var responseEvent =
+          await http.post(Uri.parse(API.readLastEventId), body: {
+        'user_id': currentUserInfo!.user_id.toString(),
+      });
+      if (responseEvent.statusCode == 200) {
+        var responseBodyOfReadLastEventId = jsonDecode(responseEvent.body);
+        if (responseBodyOfReadLastEventId["success"] == true) {
+          eventLastId =
+              int.parse(responseBodyOfReadLastEventId["eventData"]["event_id"]);
 
-          if (_eventHaveNotification == 1) {
-            String eventStartDescription =
-                "Nadszedł czas na ${_eventTitleController.text}\n${_eventDescriptionController.text}";
-            NotificationService().showNotification(
-                1,
-                _eventTitleController.text,
-                eventStartDescription,
-                _eventDateStart);
+          NotificationEvent notifiactionInitially = NotificationEvent(
+              1,
+              eventLastId,
+              _eventTitleController.text.trim(),
+              _eventDescriptionController.text.trim(),
+              _eventDateStart);
 
-            String eventEndDescription =
-                "Koniec czasu na ${_eventTitleController.text}\n${_eventDescriptionController.text}";
-            NotificationService().showNotification(2,
-                _eventTitleController.text, eventEndDescription, _eventDateEnd);
+          var responseNotificationInitially = await http.post(
+              Uri.parse(API.addNotification),
+              body: notifiactionInitially.toJson());
+
+          NotificationEvent notificationFinal = NotificationEvent(
+              1,
+              eventLastId,
+              _eventTitleController.text.trim(),
+              _eventDescriptionController.text.trim(),
+              _eventDateEnd);
+          var responseNotificationFinal = await http.post(
+              Uri.parse(API.addNotification),
+              body: notificationFinal.toJson());
+
+          //odczyt danych z bazy dla powiadomienia i utworzenie powiadomienia w systemie
+          var responseNotification =
+              await http.post(Uri.parse(API.readNotification), body: {
+            'event_id': eventLastId.toString(),
+          });
+          List<NotificationEvent> notificationsList = [];
+          if (responseNotification.statusCode == 200) {
+            var responseOfBodyNotification =
+                jsonDecode(responseNotification.body);
+            if (responseOfBodyNotification["success"] == true) {
+              for (var jsondata in responseOfBodyNotification["data"]) {
+                notificationsList.add(NotificationEvent.fromJson(jsondata));
+              }
+              for (var notification in notificationsList) {
+                NotificationService().showNotification(
+                    notification.notification_id,
+                    notification.notification_title,
+                    notification.notification_description,
+                    notification.notification_date_time);
+              }
+            }
           }
-
           setState(() {
             _eventTitleController.clear();
             _eventDescriptionController.clear();
@@ -104,9 +148,6 @@ class _AddEventPageState extends State<AddEventPage> {
             _eventNotification = false;
             _eventHaveNotification = 0;
           });
-          Fluttertoast.showToast(msg: "Dodano zdarzenie.");
-        } else {
-          Fluttertoast.showToast(msg: "Błąd, spróbuj ponownie");
         }
       }
     } catch (e) {
@@ -316,6 +357,9 @@ class _AddEventPageState extends State<AddEventPage> {
                 onPressed: () async {
                   if (formKey.currentState!.validate()) {
                     await addEvent();
+                    if (_eventNotification == true) {
+                      await addNotification();
+                    }
                     Get.offAll(const Home());
                   }
                 },

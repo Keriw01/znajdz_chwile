@@ -1,12 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../users/authentication/login_screen.dart';
+import '../users/userPreferences/user_preferences.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text("Settings Page")),
+    return Scaffold(
+      body: Center(
+        child: ElevatedButton(
+            onPressed: () {
+              RememberUserPrefs.removeUserInfo().then((value) {
+                Get.off(const LoginScreen());
+              });
+            },
+            child: const Text("Wyloguj")),
+      ),
     );
   }
 }
