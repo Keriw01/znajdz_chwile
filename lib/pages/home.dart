@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:znajdz_chwile/colors/colors.dart';
+import 'package:znajdz_chwile/pages/add_event.dart';
 import 'package:znajdz_chwile/pages/settings.dart';
 import 'package:znajdz_chwile/pages/stats.dart';
 import 'package:znajdz_chwile/users/userPreferences/current_user.dart';
@@ -41,7 +42,7 @@ class _HomeState extends State<Home> {
     },
   ];
 
-  final RxInt _indexNumber = 0.obs;
+  final RxInt _indexNumber = 1.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -52,33 +53,45 @@ class _HomeState extends State<Home> {
         },
         builder: (controller) {
           return Scaffold(
-            backgroundColor: color2,
-            body: SafeArea(
-                child: Obx(
-              () => _pages[_indexNumber.value],
-            )),
-            bottomNavigationBar: Obx(() => BottomNavigationBar(
-                  backgroundColor: color2,
-                  currentIndex: _indexNumber.value,
-                  onTap: (value) {
-                    _indexNumber.value = value;
-                  },
-                  showSelectedLabels: true,
-                  showUnselectedLabels: true,
-                  selectedItemColor: color6,
-                  unselectedItemColor: color4,
-                  items: List.generate(3, (index) {
-                    var navBtnProperty = _navigationButtonProperties[index];
-                    return BottomNavigationBarItem(
-                        backgroundColor: color2,
-                        icon: Icon(
-                          navBtnProperty["non_active_icon"],
-                        ),
-                        activeIcon: Icon(navBtnProperty["active_icon"]),
-                        label: navBtnProperty["label"]);
-                  }),
-                )),
-          );
+              backgroundColor: color2,
+              body: SafeArea(
+                  child: Obx(
+                () => _pages[_indexNumber.value],
+              )),
+              bottomNavigationBar: Obx(() => BottomNavigationBar(
+                    backgroundColor: color2,
+                    currentIndex: _indexNumber.value,
+                    onTap: (value) {
+                      _indexNumber.value = value;
+                    },
+                    showSelectedLabels: true,
+                    showUnselectedLabels: true,
+                    selectedItemColor: color6,
+                    unselectedItemColor: color4,
+                    items: List.generate(3, (index) {
+                      var navBtnProperty = _navigationButtonProperties[index];
+                      return BottomNavigationBarItem(
+                          backgroundColor: color2,
+                          icon: Icon(
+                            navBtnProperty["non_active_icon"],
+                          ),
+                          activeIcon: Icon(navBtnProperty["active_icon"]),
+                          label: navBtnProperty["label"]);
+                    }),
+                  )),
+              floatingActionButton: Obx(() => Visibility(
+                    visible: _indexNumber.value == 1 ? true : false,
+                    child: FloatingActionButton(
+                      onPressed: () {
+                        Get.to(AddEventPage());
+                      },
+                      backgroundColor: color6,
+                      child: const Icon(
+                        Icons.add,
+                        size: 40,
+                      ),
+                    ),
+                  )));
         });
   }
 }
