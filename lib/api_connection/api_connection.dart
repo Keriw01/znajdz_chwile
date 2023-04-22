@@ -7,4 +7,6 @@ class API {
   static const validateEmail = "$hostConnect/user/validate_email.php";
   static const signUp = "$hostConnect/user/signup.php";
   static const login = "$hostConnect/user/login.php";
+  static const signUpWithGoogle = "$hostConnect/user/signup_with_google.php";
+  static const getIdUserGoogle = "$hostConnect/user/get_id_user_google.php";
 }
