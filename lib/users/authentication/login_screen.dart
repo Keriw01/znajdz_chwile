@@ -67,9 +67,7 @@ class _LoginState extends State<LoginScreen> {
           await http.post(Uri.parse(API.validateEmail), body: {
         'user_email': email,
       });
-      if (responseValidateEmail.statusCode ==
-          200) // HTTP 200 - OK success status of connection with api to server
-      {
+      if (responseValidateEmail.statusCode == 200) {
         var responseBodyOfValidateEmail =
             jsonDecode(responseValidateEmail.body);
         if (responseBodyOfValidateEmail['emailFound'] == true) {
@@ -88,18 +86,14 @@ class _LoginState extends State<LoginScreen> {
     try {
       var responseSignUp = await http.post(Uri.parse(API.signUpWithGoogle),
           body: userModel.toJson());
-      if (responseSignUp.statusCode ==
-          200) // HTTP 200 - OK success status of connection with api to server
-      {
+      if (responseSignUp.statusCode == 200) {
         var responseBodyOfSignUpUserWithGoogle =
             jsonDecode(responseSignUp.body);
         if (responseBodyOfSignUpUserWithGoogle['success'] == true) {
           try {
             var responseGetIdUserGoogle = await http
                 .post(Uri.parse(API.getIdUserGoogle), body: userModel.toJson());
-            if (responseGetIdUserGoogle.statusCode ==
-                200) // HTTP 200 - OK success status of connection with api to server
-            {
+            if (responseGetIdUserGoogle.statusCode == 200) {
               var responseBodyOfGetIdUserGoogle =
                   jsonDecode(responseGetIdUserGoogle.body);
               if (responseBodyOfGetIdUserGoogle['success'] == true) {
@@ -334,22 +328,6 @@ class _LoginState extends State<LoginScreen> {
                               },
                               icon: const Icon(
                                 FontAwesomeIcons.google,
-                                color: color8,
-                              ),
-                              splashRadius: 0.1,
-                            ),
-                            IconButton(
-                              onPressed: () {},
-                              icon: const Icon(
-                                FontAwesomeIcons.twitter,
-                                color: color8,
-                              ),
-                              splashRadius: 0.1,
-                            ),
-                            IconButton(
-                              onPressed: () {},
-                              icon: const Icon(
-                                FontAwesomeIcons.facebookF,
                                 color: color8,
                               ),
                               splashRadius: 0.1,
