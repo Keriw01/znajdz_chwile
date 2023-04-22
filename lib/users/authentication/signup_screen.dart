@@ -30,9 +30,7 @@ class _LoginState extends State<SignUpScreen> {
       var response = await http.post(Uri.parse(API.validateEmail), body: {
         'user_email': emailController.text.trim(),
       });
-      if (response.statusCode ==
-          200) // HTTP 200 - OK success status of connection with api to server
-      {
+      if (response.statusCode == 200) {
         var responseBodyOfValidateEmail = jsonDecode(response.body);
         if (responseBodyOfValidateEmail['emailFound'] == true) {
           Fluttertoast.showToast(msg: "Email jest już używany!");
