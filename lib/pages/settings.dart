@@ -14,7 +14,7 @@ class SettingsPage extends StatelessWidget {
         child: ElevatedButton(
             onPressed: () {
               RememberUserPrefs.removeUserInfo().then((value) {
-                Get.off(const LoginScreen());
+                Get.offAll(const LoginScreen());
               });
             },
             child: const Text("Wyloguj")),

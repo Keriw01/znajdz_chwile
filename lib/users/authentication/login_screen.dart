@@ -8,10 +8,14 @@ import 'package:http/http.dart' as http;
 import 'package:znajdz_chwile/colors/colors.dart';
 import 'package:znajdz_chwile/users/authentication/signup_screen.dart';
 import 'package:znajdz_chwile/users/userPreferences/user_preferences.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../api_connection/api_connection.dart';
 import '../../pages/home.dart';
 import '../../models/user.dart';
+
+final GoogleSignIn _googleSignIn = GoogleSignIn();
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -40,7 +44,7 @@ class _LoginState extends State<LoginScreen> {
         if (responseBodyOfLogin['success'] == true) {
           User userInfo = User.fromJson(responseBodyOfLogin["userData"]);
           await RememberUserPrefs.storeUserInfo(userInfo);
-          Future.delayed(const Duration(milliseconds: 1000), () {
+          Future.delayed(const Duration(milliseconds: 0), () {
             Get.off(const Home());
           });
           setState(() {
@@ -54,6 +58,67 @@ class _LoginState extends State<LoginScreen> {
       }
     } catch (e) {
       Fluttertoast.showToast(msg: "Błąd");
+    }
+  }
+
+  validateUserEmail(String email, String? name) async {
+    try {
+      var responseValidateEmail =
+          await http.post(Uri.parse(API.validateEmail), body: {
+        'user_email': email,
+      });
+      if (responseValidateEmail.statusCode == 200) {
+        var responseBodyOfValidateEmail =
+            jsonDecode(responseValidateEmail.body);
+        if (responseBodyOfValidateEmail['emailFound'] == true) {
+          Fluttertoast.showToast(msg: "Email jest już używany!");
+        } else {
+          await signUpUserWithGoogle(email, name);
+        }
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: e.toString());
+    }
+  }
+
+  signUpUserWithGoogle(String email, String? name) async {
+    User userModel = User(1, email, name!, "");
+    try {
+      var responseSignUp = await http.post(Uri.parse(API.signUpWithGoogle),
+          body: userModel.toJson());
+      if (responseSignUp.statusCode == 200) {
+        var responseBodyOfSignUpUserWithGoogle =
+            jsonDecode(responseSignUp.body);
+        if (responseBodyOfSignUpUserWithGoogle['success'] == true) {
+          try {
+            var responseGetIdUserGoogle = await http
+                .post(Uri.parse(API.getIdUserGoogle), body: userModel.toJson());
+            if (responseGetIdUserGoogle.statusCode == 200) {
+              var responseBodyOfGetIdUserGoogle =
+                  jsonDecode(responseGetIdUserGoogle.body);
+              if (responseBodyOfGetIdUserGoogle['success'] == true) {
+                User userModel = User(
+                    int.parse(responseBodyOfGetIdUserGoogle['userId'][0]),
+                    email,
+                    name,
+                    "");
+                await RememberUserPrefs.storeUserInfo(userModel);
+                Get.offAll(const Home());
+                setState(() {
+                  emailController.clear();
+                  passwordController.clear();
+                });
+              }
+            }
+          } catch (e) {
+            Fluttertoast.showToast(msg: e.toString());
+          }
+        } else {
+          Fluttertoast.showToast(msg: "Problem z dodaniem użytkownika Googla");
+        }
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: e.toString());
     }
   }
 
@@ -232,6 +297,40 @@ class _LoginState extends State<LoginScreen> {
                                         fontFamily: 'Segoe UI',
                                         fontSize: 12),
                                   )),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              height: 1,
+                              width: 70,
+                              color: color8,
+                            ),
+                            const Text(" lub "),
+                            Container(
+                              height: 1,
+                              width: 70,
+                              color: color8,
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                _googleSignIn.signIn().then((value) {
+                                  validateUserEmail(
+                                      value!.email.trim(), value.displayName);
+                                });
+                              },
+                              icon: const Icon(
+                                FontAwesomeIcons.google,
+                                color: color8,
+                              ),
+                              splashRadius: 0.1,
                             ),
                           ],
                         )
