@@ -48,6 +48,8 @@ class _EditEventPageState extends State<EditEventPage> {
     widget.event.event_notification.toString() == "1"
         ? _eventNotification = true
         : _eventNotification = false;
+    _eventDateStart = widget.event.event_date_start;
+    _eventDateEnd = widget.event.event_date_end;
   }
 
   static const OutlineInputBorder borderInput = OutlineInputBorder(

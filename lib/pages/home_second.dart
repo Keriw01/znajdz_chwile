@@ -68,12 +68,12 @@ class _HomeSecondState extends State<HomeSecond> {
     Future<User?> userInfo = RememberUserPrefs.readUserInfo();
     User? currentUserInfo = await userInfo;
     var response = await http.post(Uri.parse(API.eventDelete), body: {
-      'user_id': currentUserInfo?.user_id.toString(),
       'event_id': event.event_id.toString(),
+      'user_id': currentUserInfo?.user_id.toString(),
     });
     if (response.statusCode == 200) {
-      var responseBodyOfEventList = jsonDecode(response.body);
-      if (responseBodyOfEventList["success"] == false) {
+      var responseBodyOfEventDelete = jsonDecode(response.body);
+      if (responseBodyOfEventDelete["success"] == false) {
         Fluttertoast.showToast(msg: "Nie udało się usunąć");
       }
     }

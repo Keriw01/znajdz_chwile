@@ -16,6 +16,7 @@ class API {
       "$hostConnect/notification/add_notification.php";
   static const readNotification =
       "$hostConnect/notification/read_notification.php";
+  static const loginWithGoogle = "$hostConnect/user/login_with_google.php";
   static const signUpWithGoogle = "$hostConnect/user/signup_with_google.php";
   static const getIdUserGoogle = "$hostConnect/user/get_id_user_google.php";
 }
