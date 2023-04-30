@@ -12,6 +12,9 @@ import 'package:znajdz_chwile/pages/home_second.dart';
 import 'package:intl/intl.dart';
 
 import '../models/event.dart';
+import '../models/tag.dart';
+import '../models/user.dart';
+import '../users/userPreferences/user_preferences.dart';
 
 class EditEventPage extends StatefulWidget {
   const EditEventPage({Key? key, required this.event}) : super(key: key);
@@ -31,6 +34,57 @@ class _EditEventPageState extends State<EditEventPage> {
   DateTime _eventDateEnd = DateTime.now();
   bool _eventNotification = false;
   int _eventHaveNotification = 0;
+  late final List<Tag> tagList = [];
+  List<String> tagListName = [];
+  String? dropdownValue;
+  int? tagId;
+
+  Future<List<Tag>> tagListJson() async {
+    Future<User?> userInfo = RememberUserPrefs.readUserInfo();
+    User? currentUserInfo = await userInfo;
+
+    var response = await http.post(Uri.parse(API.tagsList), body: {
+      'user_id': currentUserInfo?.user_id.toString(),
+    });
+    List<Tag> tagList = [];
+    if (response.statusCode == 200) {
+      var responseBodyOfTagList = jsonDecode(response.body);
+      if (responseBodyOfTagList['success'] == true) {
+        for (var jsondata in responseBodyOfTagList["data"]) {
+          tagList.add(Tag.fromJson(jsondata));
+        }
+      }
+    }
+    return tagList;
+  }
+
+  List<String> tagWithNameList() {
+    List<String> listTagWithName = [];
+    for (var element in tagList) {
+      listTagWithName.add(element.tag_name);
+    }
+    return listTagWithName;
+  }
+
+  String tagFindName(int tagId) {
+    String tagName = "empty";
+    for (var element in tagList) {
+      if (element.tag_id == tagId) {
+        tagName = element.tag_name;
+      }
+    }
+    return tagName;
+  }
+
+  int tagFindId(String tagName) {
+    int tagId = widget.event.tag_id;
+    for (var element in tagList) {
+      if (element.tag_name == tagName) {
+        tagId = element.tag_id;
+      }
+    }
+    return tagId;
+  }
 
   @override
   void initState() {
@@ -50,6 +104,13 @@ class _EditEventPageState extends State<EditEventPage> {
         : _eventNotification = false;
     _eventDateStart = widget.event.event_date_start;
     _eventDateEnd = widget.event.event_date_end;
+    tagId = widget.event.tag_id;
+    tagListJson().then((value) {
+      setState(() {
+        tagList.addAll(value);
+        dropdownValue = tagFindName(widget.event.tag_id);
+      });
+    });
   }
 
   static const OutlineInputBorder borderInput = OutlineInputBorder(
@@ -62,6 +123,7 @@ class _EditEventPageState extends State<EditEventPage> {
     Event eventModel = Event(
         event.event_id,
         event.user_id,
+        tagId!,
         _eventTitleController.text.trim(),
         _eventDescriptionController.text.trim(),
         _eventDateStart,
@@ -270,6 +332,24 @@ class _EditEventPageState extends State<EditEventPage> {
                     }
                   },
                 ),
+              ),
+              DropdownButton<String>(
+                value: dropdownValue,
+                elevation: 16,
+                menuMaxHeight: 50,
+                onChanged: (String? value) {
+                  setState(() {
+                    dropdownValue = value!;
+                    tagId = tagFindId(value);
+                  });
+                },
+                items: tagWithNameList()
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

@@ -3,6 +3,7 @@
 class Event {
   int event_id;
   int user_id;
+  int tag_id;
   String event_title;
   String event_description;
   DateTime event_date_start;
@@ -13,6 +14,7 @@ class Event {
   Event(
       this.event_id,
       this.user_id,
+      this.tag_id,
       this.event_title,
       this.event_description,
       this.event_date_start,
@@ -23,6 +25,7 @@ class Event {
   factory Event.fromJson(Map<String, dynamic> json) => Event(
       int.parse(json['event_id']),
       int.parse(json['user_id']),
+      int.parse(json['tag_id']),
       json['event_title'],
       json['event_description'],
       DateTime.parse(json['event_date_start']),
@@ -33,6 +36,7 @@ class Event {
   Map<String, dynamic> toJson() => {
         'event_id': event_id.toString(),
         'user_id': user_id.toString(),
+        'tag_id': tag_id.toString(),
         'event_title': event_title,
         'event_description': event_description,
         'event_date_start': event_date_start.toString(),
