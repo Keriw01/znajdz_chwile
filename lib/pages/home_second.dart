@@ -283,7 +283,7 @@ class _HomeSecondState extends State<HomeSecond> {
                               return AlertDialog(
                                 title: const Text("Usuwanie wydarzenia"),
                                 content: const Text(
-                                    "Czy napewno chcesz usunąc to wydarzenie?"),
+                                    "Czy napewno chcesz usunąć to wydarzenie?"),
                                 actions: <Widget>[
                                   TextButton(
                                       onPressed: () {
