@@ -16,6 +16,7 @@ import 'package:intl/intl.dart';
 import 'package:znajdz_chwile/services/local_notice_service.dart';
 
 import '../models/event.dart';
+import '../models/tag.dart';
 import '../models/user.dart';
 import '../models/notification.dart';
 import '../users/userPreferences/user_preferences.dart';
@@ -32,6 +33,12 @@ class AddEventPage extends StatefulWidget {
 class _AddEventPageState extends State<AddEventPage> {
   @override
   void initState() {
+    tagListJson().then((value) {
+      setState(() {
+        tagList.addAll(value);
+        dropdownValue = tagList[0].tag_name;
+      });
+    });
     tz.initializeTimeZones();
     super.initState();
   }
@@ -41,6 +48,10 @@ class _AddEventPageState extends State<AddEventPage> {
   final _eventDescriptionController = TextEditingController();
   final _eventDateStartController = TextEditingController();
   final _eventDateEndController = TextEditingController();
+  late final List<Tag> tagList = [];
+  List<String> tagListName = [];
+  String? dropdownValue;
+  int? tagId;
 
   DateTime _eventDateStart = DateTime.now();
   DateTime _eventDateEnd = DateTime.now();
@@ -53,13 +64,51 @@ class _AddEventPageState extends State<AddEventPage> {
       ),
       borderSide: BorderSide.none);
 
-  addEvent() async {
+  Future<List<Tag>> tagListJson() async {
     Future<User?> userInfo = RememberUserPrefs.readUserInfo();
     User? currentUserInfo = await userInfo;
 
+    var response = await http.post(Uri.parse(API.tagsList), body: {
+      'user_id': currentUserInfo?.user_id.toString(),
+    });
+    List<Tag> tagList = [];
+    if (response.statusCode == 200) {
+      var responseBodyOfTagList = jsonDecode(response.body);
+      if (responseBodyOfTagList['success'] == true) {
+        for (var jsondata in responseBodyOfTagList["data"]) {
+          tagList.add(Tag.fromJson(jsondata));
+        }
+      }
+    }
+    return tagList;
+  }
+
+  List<String> tagWithNameList() {
+    List<String> listTagWithName = [];
+    for (var element in tagList) {
+      listTagWithName.add(element.tag_name);
+    }
+    return listTagWithName;
+  }
+
+  int? tagFindId(String tagName) {
+    int? tagId;
+    for (var element in tagList) {
+      if (element.tag_name == tagName) {
+        tagId = element.tag_id;
+      }
+    }
+    return tagId;
+  }
+
+  addEvent() async {
+    Future<User?> userInfo = RememberUserPrefs.readUserInfo();
+    User? currentUserInfo = await userInfo;
+    tagId = tagFindId(dropdownValue!);
     Event eventModel = Event(
         1,
         currentUserInfo!.user_id,
+        tagId!,
         _eventTitleController.text.trim(),
         _eventDescriptionController.text.trim(),
         _eventDateStart,
@@ -333,6 +382,24 @@ class _AddEventPageState extends State<AddEventPage> {
                     }
                   },
                 ),
+              ),
+              DropdownButton<String>(
+                value: dropdownValue,
+                elevation: 16,
+                menuMaxHeight: 50,
+                onChanged: (String? value) {
+                  setState(() {
+                    dropdownValue = value!;
+                  });
+                  tagId = tagFindId(value!);
+                },
+                items: tagWithNameList()
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

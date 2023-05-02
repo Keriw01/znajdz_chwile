@@ -65,13 +65,13 @@ class _LoginState extends State<LoginScreen> {
     try {
       var responseValidateEmail =
           await http.post(Uri.parse(API.validateEmail), body: {
-        'user_email': email,
+        'user_email': email.trim().toString(),
       });
       if (responseValidateEmail.statusCode == 200) {
         var responseBodyOfValidateEmail =
             jsonDecode(responseValidateEmail.body);
         if (responseBodyOfValidateEmail['emailFound'] == true) {
-          Fluttertoast.showToast(msg: "Email jest już używany!");
+          loginUserWithGoogle(email, name);
         } else {
           await signUpUserWithGoogle(email, name);
         }
@@ -81,8 +81,34 @@ class _LoginState extends State<LoginScreen> {
     }
   }
 
+  loginUserWithGoogle(String email, String? name) async {
+    User userModel = User(1, name!, email, "#");
+    try {
+      var responseLogin = await http.post(Uri.parse(API.loginWithGoogle),
+          body: userModel.toJson());
+      if (responseLogin.statusCode == 200) {
+        var responseBodyOfLoginUserWithGoogle = jsonDecode(responseLogin.body);
+        if (responseBodyOfLoginUserWithGoogle['success'] == true) {
+          User userInfo =
+              User.fromJson(responseBodyOfLoginUserWithGoogle["userData"]);
+          await RememberUserPrefs.storeUserInfo(userInfo);
+          Get.offAll(const Home());
+          setState(() {
+            emailController.clear();
+            passwordController.clear();
+          });
+          Fluttertoast.showToast(msg: "Logowanie powiodło się.");
+        }
+      } else {
+        Fluttertoast.showToast(msg: "Błąd, podaj poprawne dane");
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: e.toString());
+    }
+  }
+
   signUpUserWithGoogle(String email, String? name) async {
-    User userModel = User(1, email, name!, "");
+    User userModel = User(1, name!, email, "#");
     try {
       var responseSignUp = await http.post(Uri.parse(API.signUpWithGoogle),
           body: userModel.toJson());
@@ -99,9 +125,9 @@ class _LoginState extends State<LoginScreen> {
               if (responseBodyOfGetIdUserGoogle['success'] == true) {
                 User userModel = User(
                     int.parse(responseBodyOfGetIdUserGoogle['userId'][0]),
-                    email,
                     name,
-                    "");
+                    email,
+                    "#");
                 await RememberUserPrefs.storeUserInfo(userModel);
                 Get.offAll(const Home());
                 setState(() {
