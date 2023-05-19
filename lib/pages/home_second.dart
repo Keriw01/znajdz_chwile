@@ -415,9 +415,9 @@ class _HomeSecondState extends State<HomeSecond> {
               rangeSelectionMode: _rangeSelectionMode,
               calendarFormat: _calendarFormat,
               availableCalendarFormats: const {
-                CalendarFormat.week: 'Tydzień',
-                CalendarFormat.twoWeeks: '2 Tygodnie',
-                CalendarFormat.month: 'Miesiąc',
+                CalendarFormat.week: 'Miesiąc',
+                CalendarFormat.twoWeeks: 'Tydzień',
+                CalendarFormat.month: '2 Tygodnie',
               },
               selectedDayPredicate: (day) {
                 return isSameDay(_selectedDay, day);
