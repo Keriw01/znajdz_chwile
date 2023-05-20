@@ -2,7 +2,7 @@
 
 class Stats {
   int statistics_id;
-  int? user_id;
+  int user_id;
   int amount_events;
   int amount_ended_events;
   int amount_no_ended_events;

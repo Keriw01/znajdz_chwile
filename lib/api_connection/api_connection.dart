@@ -24,4 +24,10 @@ class API {
   static const tagsList = "$hostConnect/tag/list_tag.php";
   static const infoAboutEvents = "$hostConnect/stats/info_about_events.php";
   static const saveStats = "$hostConnect/stats/save_stats.php";
+  static const infoAboutEventsPerDay =
+      "$hostConnect/stats/info_about_events_per_day.php";
+  static const infoAboutEventsPerMonth =
+      "$hostConnect/stats/info_about_events_per_month.php";
+  static const infoAboutEventsWithTag =
+      "$hostConnect/stats/info_about_events_with_tag.php";
 }
