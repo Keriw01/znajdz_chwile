@@ -43,7 +43,7 @@ class _StatsPageState extends State<StatsPage> {
               const SizedBox(
                 height: 20,
               ),
-              const Text("Dzienny postęp",
+              const Text("Dzienny postęp: ",
                   style: TextStyle(fontWeight: FontWeight.bold)),
               const ThirdChartDailyProgress(),
               const SizedBox(
