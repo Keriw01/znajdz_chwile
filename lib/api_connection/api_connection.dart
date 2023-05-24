@@ -22,4 +22,12 @@ class API {
   static const signUpWithGoogle = "$hostConnect/user/signup_with_google.php";
   static const getIdUserGoogle = "$hostConnect/user/get_id_user_google.php";
   static const tagsList = "$hostConnect/tag/list_tag.php";
+  static const infoAboutEvents = "$hostConnect/stats/info_about_events.php";
+  static const saveStats = "$hostConnect/stats/save_stats.php";
+  static const infoAboutEventsPerDay =
+      "$hostConnect/stats/info_about_events_per_day.php";
+  static const infoAboutEventsPerMonth =
+      "$hostConnect/stats/info_about_events_per_month.php";
+  static const infoAboutEventsWithTag =
+      "$hostConnect/stats/info_about_events_with_tag.php";
 }
