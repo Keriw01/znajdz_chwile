@@ -386,7 +386,7 @@ class _AddEventPageState extends State<AddEventPage> {
               DropdownButton<String>(
                 value: dropdownValue,
                 elevation: 16,
-                menuMaxHeight: 50,
+                menuMaxHeight: 100,
                 onChanged: (String? value) {
                   setState(() {
                     dropdownValue = value!;
