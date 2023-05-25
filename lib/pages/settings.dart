@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:znajdz_chwile/pages/stats.dart';
 
 import '../users/authentication/login_screen.dart';
 import '../users/userPreferences/user_preferences.dart';
 import '../colors/colors.dart';
-
-final GoogleSignIn _googleSignOut = GoogleSignIn();
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -25,7 +21,6 @@ class SettingsPage extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 RememberUserPrefs.removeUserInfo().then((value) {
-                  _googleSignOut.signOut();
                   Get.offAll(const LoginScreen());
                 });
               },

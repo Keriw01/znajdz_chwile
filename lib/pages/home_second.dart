@@ -30,7 +30,7 @@ class _HomeSecondState extends State<HomeSecond> {
   DateTime? _rangeEnd;
   bool rangeSelect = false;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode.toggledOn;
-  CalendarFormat _calendarFormat = CalendarFormat.month;
+  CalendarFormat _calendarFormat = CalendarFormat.week;
   final List<Event> eventList = [];
   late final List<Tag> tagList = [];
 
