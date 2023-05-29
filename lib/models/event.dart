@@ -1,47 +1,45 @@
-// ignore_for_file: non_constant_identifier_names
-
 class Event {
-  int event_id;
-  int user_id;
-  int tag_id;
-  String event_title;
-  String event_description;
-  DateTime event_date_start;
-  DateTime event_date_end;
-  int event_is_done = 0;
-  int event_notification = 0;
+  int eventId;
+  int userId;
+  int tagId;
+  String eventTitle;
+  String eventDescription;
+  DateTime eventDateStart;
+  DateTime eventDateEnd;
+  int eventIsDone;
+  int eventNotification;
 
   Event(
-      this.event_id,
-      this.user_id,
-      this.tag_id,
-      this.event_title,
-      this.event_description,
-      this.event_date_start,
-      this.event_date_end,
-      this.event_is_done,
-      this.event_notification);
+      {required this.eventId,
+      required this.userId,
+      required this.tagId,
+      required this.eventTitle,
+      required this.eventDescription,
+      required this.eventDateStart,
+      required this.eventDateEnd,
+      this.eventIsDone = 0,
+      this.eventNotification = 0});
 
   factory Event.fromJson(Map<String, dynamic> json) => Event(
-      int.parse(json['event_id']),
-      int.parse(json['user_id']),
-      int.parse(json['tag_id']),
-      json['event_title'],
-      json['event_description'],
-      DateTime.parse(json['event_date_start']),
-      DateTime.parse(json['event_date_end']),
-      int.parse(json['event_is_done']),
-      int.parse(json['event_notification']));
+      eventId: int.parse(json['event_id'] as String),
+      userId: int.parse(json['user_id'] as String),
+      tagId: int.parse(json['tag_id'] as String),
+      eventTitle: json['event_title'] as String,
+      eventDescription: json['event_description'] as String,
+      eventDateStart: DateTime.parse(json['event_date_start'] as String),
+      eventDateEnd: DateTime.parse(json['event_date_end'] as String),
+      eventIsDone: int.parse(json['event_is_done'] as String),
+      eventNotification: int.parse(json['event_notification'] as String));
 
   Map<String, dynamic> toJson() => {
-        'event_id': event_id.toString(),
-        'user_id': user_id.toString(),
-        'tag_id': tag_id.toString(),
-        'event_title': event_title,
-        'event_description': event_description,
-        'event_date_start': event_date_start.toString(),
-        'event_date_end': event_date_end.toString(),
-        'event_is_done': event_is_done.toString(),
-        'event_notification': event_notification.toString(),
+        'event_id': eventId.toString(),
+        'user_id': userId.toString(),
+        'tag_id': tagId.toString(),
+        'event_title': eventTitle,
+        'event_description': eventDescription,
+        'event_date_start': eventDateStart.toString(),
+        'event_date_end': eventDateEnd.toString(),
+        'event_is_done': eventIsDone.toString(),
+        'event_notification': eventNotification.toString(),
       };
 }

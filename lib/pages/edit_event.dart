@@ -2,11 +2,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:znajdz_chwile/api_connection/api_connection.dart';
 import 'package:znajdz_chwile/colors/colors.dart';
 import 'package:http/http.dart' as http;
+import 'package:znajdz_chwile/models/notification.dart';
 import 'package:znajdz_chwile/pages/home.dart';
 import 'package:znajdz_chwile/pages/home_second.dart';
 import 'package:intl/intl.dart';
@@ -14,7 +16,13 @@ import 'package:intl/intl.dart';
 import '../models/event.dart';
 import '../models/tag.dart';
 import '../models/user.dart';
+import '../services/local_notice_service.dart';
 import '../users/userPreferences/user_preferences.dart';
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
+User? currentUserInfo;
 
 class EditEventPage extends StatefulWidget {
   const EditEventPage({Key? key, required this.event}) : super(key: key);
@@ -29,15 +37,46 @@ class _EditEventPageState extends State<EditEventPage> {
   late TextEditingController _eventDescriptionController;
   late TextEditingController _eventDateStartController;
   late TextEditingController _eventDateEndController;
-
-  DateTime _eventDateStart = DateTime.now();
-  DateTime _eventDateEnd = DateTime.now();
-  bool _eventNotification = false;
-  int _eventHaveNotification = 0;
   late final List<Tag> tagList = [];
   List<String> tagListName = [];
   String? dropdownValue;
   int? tagId;
+  DateTime _eventDateStart = DateTime.now();
+  DateTime _eventDateEnd = DateTime.now();
+  bool _eventNotification = false;
+  int _eventHaveNotification = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _eventTitleController =
+        TextEditingController(text: widget.event.eventTitle.toString());
+    _eventDescriptionController =
+        TextEditingController(text: widget.event.eventDescription.toString());
+    _eventDateStartController = TextEditingController(
+        text:
+            DateFormat('HH:mm dd-MM-yyyy').format(widget.event.eventDateStart));
+    _eventDateEndController = TextEditingController(
+        text: DateFormat('HH:mm dd-MM-yyyy').format(widget.event.eventDateEnd));
+    widget.event.eventNotification.toString() == "1"
+        ? _eventNotification = true
+        : _eventNotification = false;
+    _eventDateStart = widget.event.eventDateStart;
+    _eventDateEnd = widget.event.eventDateEnd;
+    tagId = widget.event.tagId;
+    tagListJson().then((value) {
+      setState(() {
+        tagList.addAll(value);
+        dropdownValue = tagFindName(widget.event.tagId);
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    currentUserInfo = null;
+    super.dispose();
+  }
 
   Future<List<Tag>> tagListJson() async {
     Future<User?> userInfo = RememberUserPrefs.readUserInfo();
@@ -77,40 +116,13 @@ class _EditEventPageState extends State<EditEventPage> {
   }
 
   int tagFindId(String tagName) {
-    int tagId = widget.event.tag_id;
+    int tagId = widget.event.tagId;
     for (var element in tagList) {
       if (element.tag_name == tagName) {
         tagId = element.tag_id;
       }
     }
     return tagId;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _eventTitleController =
-        TextEditingController(text: widget.event.event_title.toString());
-    _eventDescriptionController =
-        TextEditingController(text: widget.event.event_description.toString());
-    _eventDateStartController = TextEditingController(
-        text: DateFormat('HH:mm dd-MM-yyyy')
-            .format(widget.event.event_date_start));
-    _eventDateEndController = TextEditingController(
-        text:
-            DateFormat('HH:mm dd-MM-yyyy').format(widget.event.event_date_end));
-    widget.event.event_notification.toString() == "1"
-        ? _eventNotification = true
-        : _eventNotification = false;
-    _eventDateStart = widget.event.event_date_start;
-    _eventDateEnd = widget.event.event_date_end;
-    tagId = widget.event.tag_id;
-    tagListJson().then((value) {
-      setState(() {
-        tagList.addAll(value);
-        dropdownValue = tagFindName(widget.event.tag_id);
-      });
-    });
   }
 
   static const OutlineInputBorder borderInput = OutlineInputBorder(
@@ -121,34 +133,104 @@ class _EditEventPageState extends State<EditEventPage> {
 
   updateEvent(Event event) async {
     Event eventModel = Event(
-        event.event_id,
-        event.user_id,
-        tagId!,
-        _eventTitleController.text.trim(),
-        _eventDescriptionController.text.trim(),
-        _eventDateStart,
-        _eventDateEnd,
-        event.event_is_done,
-        _eventHaveNotification);
+        eventId: event.eventId,
+        userId: event.userId,
+        tagId: tagId!,
+        eventTitle: _eventTitleController.text.trim(),
+        eventDescription: _eventDescriptionController.text.trim(),
+        eventDateStart: _eventDateStart,
+        eventDateEnd: _eventDateEnd,
+        eventIsDone: event.eventIsDone,
+        eventNotification: _eventHaveNotification);
     try {
       var response = await http.post(Uri.parse(API.eventUpdate),
           body: eventModel.toJson());
       if (response.statusCode == 200) {
         var responseBodyOfEditEvent = jsonDecode(response.body);
         if (responseBodyOfEditEvent["success"] == true) {
-          Fluttertoast.showToast(msg: "Edytowano zdarzenie.");
-          setState(() {
-            _eventTitleController.clear();
-            _eventDescriptionController.clear();
-            _eventDateStartController.clear();
-            _eventDateEndController.clear();
-            _eventNotification = false;
-            _eventHaveNotification = 0;
-          });
         } else {
           Fluttertoast.showToast(msg: "Błąd, spróbuj ponownie");
         }
       }
+    } catch (e) {
+      Fluttertoast.showToast(msg: e.toString());
+    }
+  }
+
+  updateNotifiaction(Event event) async {
+//odczyt wszystkich powiadomien
+    try {
+      var responseNotification =
+          await http.post(Uri.parse(API.readNotification), body: {
+        'event_id': event.eventId.toString(),
+      });
+      List<NotificationEvent> notificationsList = [];
+      if (responseNotification.statusCode == 200) {
+        var responseOfBodyNotification = jsonDecode(responseNotification.body);
+        if (responseOfBodyNotification["success"] == true) {
+          for (var jsondata in responseOfBodyNotification["data"]) {
+            notificationsList.add(NotificationEvent.fromJson(jsondata));
+          }
+          // update powiadomien
+          notificationsList[0].notification_date_time = _eventDateStart;
+          notificationsList[0].notification_description =
+              _eventDescriptionController.text.trim();
+          notificationsList[0].notification_title =
+              _eventTitleController.text.trim();
+          int i = 0;
+          for (var notification in notificationsList) {
+            if (i == 0) {
+              notification.notification_date_time = _eventDateStart;
+            } else {
+              notification.notification_date_time = _eventDateEnd;
+            }
+            i++;
+            notification.notification_description =
+                _eventDescriptionController.text.trim();
+            notification.notification_title = _eventTitleController.text.trim();
+            try {
+              await http.post(Uri.parse(API.updateNotification),
+                  body: notification.toJson());
+            } catch (e) {
+              Fluttertoast.showToast(msg: e.toString());
+            }
+          }
+        }
+      }
+      try {
+        var responseReadNotification =
+            await http.post(Uri.parse(API.readNotification), body: {
+          'event_id': event.eventId.toString(),
+        });
+        List<NotificationEvent> notificationsListSecond = [];
+        if (responseReadNotification.statusCode == 200) {
+          var responseOfBodyReadNotification =
+              jsonDecode(responseReadNotification.body);
+          if (responseOfBodyReadNotification["success"] == true) {
+            for (var jsondata in responseOfBodyReadNotification["data"]) {
+              notificationsListSecond.add(NotificationEvent.fromJson(jsondata));
+            }
+            for (var notification in notificationsListSecond) {
+              NotificationService().showNotification(
+                  notification.notification_id,
+                  notification.notification_title,
+                  notification.notification_description,
+                  notification.notification_date_time);
+            }
+          }
+        }
+      } catch (e) {
+        Fluttertoast.showToast(msg: e.toString());
+      }
+      Fluttertoast.showToast(msg: "Edytowano zdarzenie.");
+      setState(() {
+        _eventTitleController.clear();
+        _eventDescriptionController.clear();
+        _eventDateStartController.clear();
+        _eventDateEndController.clear();
+        _eventNotification = false;
+        _eventHaveNotification = 0;
+      });
     } catch (e) {
       Fluttertoast.showToast(msg: e.toString());
     }
@@ -374,6 +456,9 @@ class _EditEventPageState extends State<EditEventPage> {
                 onPressed: () async {
                   if (formKey.currentState!.validate()) {
                     await updateEvent(widget.event);
+                    if (_eventNotification == true) {
+                      await updateNotifiaction(widget.event);
+                    }
                     Get.offAll(const Home());
                   }
                 },

@@ -83,7 +83,7 @@ class _HomeState extends State<Home> {
                     visible: _indexNumber.value == 1 ? true : false,
                     child: FloatingActionButton(
                       onPressed: () {
-                        Get.to(AddEventPage());
+                        Get.to(const AddEventPage());
                       },
                       backgroundColor: color6,
                       child: const Icon(

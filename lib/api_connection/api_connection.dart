@@ -1,12 +1,11 @@
 class API {
-  static const hostConnect =
-      "https://znajdzchwile.000webhostapp.com/api_znajdz_chwile";
+  static const hostConnect = "http://192.168.100.6/api_znajdz_chwile";
   static const hostConnectUser = "$hostConnect/user";
 
   static const validateEmail = "$hostConnect/user/validate_email.php";
   static const signUp = "$hostConnect/user/signup.php";
   static const login = "$hostConnect/user/login.php";
-  static const eventsList = "$hostConnect/event/list_events.php";
+  // static const eventsList = "$hostConnect/event/list_events.php";
   static const eventsListWithRangeDate =
       "$hostConnect/event/list_event_with_range_date.php";
   static const eventCheck = "$hostConnect/event/check_event.php";
@@ -30,4 +29,8 @@ class API {
       "$hostConnect/stats/info_about_events_per_month.php";
   static const infoAboutEventsWithTag =
       "$hostConnect/stats/info_about_events_with_tag.php";
+  static const updateNotification =
+      "$hostConnect/notification/update_notification.php";
+
+  static const eventsList = "$hostConnect/event/list_events.php";
 }
