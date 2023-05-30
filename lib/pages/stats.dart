@@ -25,33 +25,31 @@ class _StatsPageState extends State<StatsPage> {
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.only(top: 20),
-            child: Column(children: [
-              const Text("Wykres dla bieżącego użytkownika",
+            child: Column(children: const [
+              Text("Wykres dla bieżącego użytkownika",
                   style: TextStyle(fontWeight: FontWeight.bold)),
-              const FirstChartAboutUser(),
-              const Padding(
+              FirstChartAboutUser(),
+              Padding(
                 padding: EdgeInsets.only(left: 20.0, right: 20.0),
                 child: Text(
                   "Wybierz datę, miesiąc/dzień dla którego chcesz zobaczyć ilość zdarzeń wykonanych w porównaniu do wszystkich",
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
-              const SizedBox(
+              SizedBox(
                 height: 20,
               ),
-              const SecondChartMonthOrDay(),
-              const SizedBox(
+              SecondChartMonthOrDay(),
+              SizedBox(
                 height: 20,
               ),
-              const Text("Dzienny postęp: ",
+              Text("Dzienny postęp: ",
                   style: TextStyle(fontWeight: FontWeight.bold)),
-              const ThirdChartDailyProgress(),
-              const SizedBox(
+              ThirdChartDailyProgress(),
+              SizedBox(
                 height: 20,
               ),
-              Text("Ile zadań z danej kategorii „tagu” - $tag",
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
-              const FourChartWithTag(),
+              FourChartWithTag(),
             ]),
           ),
         ));
