@@ -17,6 +17,9 @@ class EventsProvider extends ChangeNotifier {
   int _tagId = 1;
   int get tagId => _tagId;
 
+  String _tagName = "empty";
+  String get tagName => _tagName;
+
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
@@ -99,13 +102,35 @@ class EventsProvider extends ChangeNotifier {
     for (var element in tags) {
       if (element.tag_name == tagName) {
         tagId = element.tag_id;
+        break;
       }
     }
     return tagId;
   }
 
+  String tagFindName(int tagId) {
+    String tagName = "empty";
+    for (var element in tags) {
+      if (element.tag_id == tagId) {
+        tagName = element.tag_name;
+        break;
+      }
+    }
+    return tagName;
+  }
+
   void addEvent(Event event) {
     events.add(event);
+    notifyListeners();
+  }
+
+  void updateEvent(Event event) {
+    for (var i = 0; i < events.length; i++) {
+      if (events[i].eventId == event.eventId) {
+        events[i] = event;
+        break;
+      }
+    }
     notifyListeners();
   }
 }

@@ -90,3 +90,19 @@ addEventToDatabase(Event event) async {
     Fluttertoast.showToast(msg: e.toString());
   }
 }
+
+updateEventToDatabase(Event event) async {
+  try {
+    var response =
+        await http.post(Uri.parse(API.eventUpdate), body: event.toJson());
+    if (response.statusCode == 200) {
+      var responseBodyOfEditEvent = jsonDecode(response.body);
+      if (responseBodyOfEditEvent["success"] == true) {
+      } else {
+        Fluttertoast.showToast(msg: "Błąd, spróbuj ponownie");
+      }
+    }
+  } catch (e) {
+    Fluttertoast.showToast(msg: e.toString());
+  }
+}

@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 import 'package:fl_chart/fl_chart.dart';
@@ -131,6 +130,8 @@ class _FourChartWithTagState extends State<FourChartWithTag> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        Text("Ile zadań z danej kategorii „tagu” - $tag",
+            style: const TextStyle(fontWeight: FontWeight.bold)),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [

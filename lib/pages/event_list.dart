@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:znajdz_chwile/colors/colors.dart';
@@ -22,16 +25,6 @@ class EventListSection extends StatefulWidget {
 
   @override
   State<EventListSection> createState() => _EventListSectionState();
-}
-
-String tagFindName(int tagId, EventsProvider provider) {
-  String tagName = "empty";
-  for (var element in provider.tags) {
-    if (element.tag_id == tagId) {
-      tagName = element.tag_name;
-    }
-  }
-  return tagName;
 }
 
 class _EventListSectionState extends State<EventListSection> {
@@ -183,7 +176,7 @@ class _EventListSectionState extends State<EventListSection> {
                           child: SingleChildScrollView(
                               scrollDirection: Axis.vertical,
                               child: Text(
-                                tagFindName(event.tagId, provider),
+                                provider.tagFindName(event.tagId),
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontFamily: 'OpenSans',
@@ -244,8 +237,18 @@ class _EventListSectionState extends State<EventListSection> {
                                       )),
                                   TextButton(
                                       onPressed: () {
-                                        provider.deleteEvent(event);
-                                        deleteEventFromDatabase(event);
+                                        deleteEventFromDatabase(event)
+                                            .then((result) {
+                                          if (result == true) {
+                                            provider.deleteEvent(event);
+                                          } else {
+                                            Fluttertoast.showToast(
+                                                msg: "Błąd, spróbuj ponownie");
+                                          }
+                                        }).catchError((error) {
+                                          Fluttertoast.showToast(
+                                              msg: error.toString());
+                                        });
                                         Navigator.of(context).pop();
                                       },
                                       child: const Text("Usuń",

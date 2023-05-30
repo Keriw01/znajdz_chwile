@@ -1,5 +1,6 @@
 class API {
-  static const hostConnect = "http://192.168.100.6/api_znajdz_chwile";
+  static const hostConnect =
+      "https://znajdzchwile.000webhostapp.com/api_znajdz_chwile";
   static const hostConnectUser = "$hostConnect/user";
 
   static const validateEmail = "$hostConnect/user/validate_email.php";
@@ -32,5 +33,5 @@ class API {
   static const updateNotification =
       "$hostConnect/notification/update_notification.php";
 
-  static const eventsList = "$hostConnect/event/list_events.php";
+  static const eventsList = "$hostConnect/event/list_events_new.php";
 }

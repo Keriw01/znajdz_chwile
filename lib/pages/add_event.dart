@@ -114,7 +114,7 @@ class _AddEventPageState extends State<AddEventPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<EventsProvider>(builder: (context, tagProvider, child) {
+    return Consumer<EventsProvider>(builder: (context, eventProvider, child) {
       return Scaffold(
           backgroundColor: color2,
           appBar: AppBar(
@@ -302,11 +302,11 @@ class _AddEventPageState extends State<AddEventPage> {
                     setState(() {
                       dropdownValue = value!;
                     });
-                    tagProvider.selectedTag = value!;
+                    eventProvider.selectedTag = value!;
 
-                    tagId = tagProvider.tagFindId(value);
+                    tagId = eventProvider.tagFindId(value);
                   },
-                  items: tagProvider.listTagWithName
+                  items: eventProvider.listTagWithName
                       .map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -348,12 +348,19 @@ class _AddEventPageState extends State<AddEventPage> {
                           eventDateStart: _eventDateStart,
                           eventDateEnd: _eventDateEnd,
                           eventNotification: _eventHaveNotification);
-                      tagProvider.addEvent(eventModel);
-                      addEventToDatabase(eventModel);
-                      if (_eventNotification == true) {
-                        await addNotification(tagProvider.events.last.eventId,
-                            currentUserInfo.user_id);
-                      }
+                      addEventToDatabase(eventModel).then((result) {
+                        if (result == true) {
+                          eventProvider.addEvent(eventModel);
+                          if (_eventNotification == true) {
+                            addNotification(eventProvider.events.last.eventId,
+                                currentUserInfo.user_id);
+                          }
+                        } else {
+                          Fluttertoast.showToast(msg: "Błąd, spróbuj ponownie");
+                        }
+                      }).catchError((error) {
+                        Fluttertoast.showToast(msg: error.toString());
+                      });
                       Get.offAll(const Home());
                     }
                   },
