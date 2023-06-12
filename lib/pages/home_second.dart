@@ -1,10 +1,13 @@
 // ignore_for_file: depend_on_referenced_packages
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:znajdz_chwile/colors/colors.dart';
 import 'package:znajdz_chwile/pages/event_list.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+
+import '../provider/events_provider.dart';
 
 class HomeSecond extends StatefulWidget {
   const HomeSecond({super.key});
@@ -151,13 +154,16 @@ class _HomeSecondState extends State<HomeSecond> {
                 ? dateRangeHeader(_rangeStart!, _rangeEnd!)
                 : dateHeader(_focusedDay),
           ),
-          Expanded(
-              child: EventListSection(
-            selectedDay: _selectedDay ?? DateTime.now(),
-            rangeStart: _rangeStart ?? DateTime.now(),
-            rangeEnd: _rangeEnd ?? DateTime.now(),
-            rangeSelect: rangeSelect,
-          )),
+          ChangeNotifierProvider(
+            create: (context) => EventsProvider(),
+            child: Expanded(
+                child: EventListSection(
+              selectedDay: _selectedDay ?? DateTime.now(),
+              rangeStart: _rangeStart ?? DateTime.now(),
+              rangeEnd: _rangeEnd ?? DateTime.now(),
+              rangeSelect: rangeSelect,
+            )),
+          ),
         ],
       ),
     );

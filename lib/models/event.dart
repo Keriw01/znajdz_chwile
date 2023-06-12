@@ -8,7 +8,6 @@ class Event {
   DateTime eventDateEnd;
   int eventIsDone;
   int eventNotification;
-
   Event(
       {required this.eventId,
       required this.userId,

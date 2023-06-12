@@ -34,7 +34,9 @@ class _EventListSectionState extends State<EventListSection> {
       builder: (context, eventProvider, _) {
         if (eventProvider.isLoading) {
           return const Center(
-            child: CircularProgressIndicator(),
+            child: CircularProgressIndicator(
+              color: color8,
+            ),
           );
         } else if (eventProvider.errorMessage.isNotEmpty) {
           return Center(

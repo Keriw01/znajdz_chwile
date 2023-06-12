@@ -19,26 +19,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => EventsProvider()),
-      ],
-      child: ChangeNotifierProvider(
-        create: (context) => EventsProvider(),
-        child: GetMaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'Znajdz Chwilę',
-          home: FutureBuilder(
-              future: RememberUserPrefs.readUserInfo(),
-              builder: (context, dataSnapShot) {
-                if (dataSnapShot.data == null) {
-                  return const LoginScreen();
-                } else {
-                  return const Home();
-                }
-              }),
-        ),
-      ),
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Znajdz Chwilę',
+      home: FutureBuilder(
+          future: RememberUserPrefs.readUserInfo(),
+          builder: (context, dataSnapShot) {
+            if (dataSnapShot.data == null) {
+              return const LoginScreen();
+            } else {
+              return const Home();
+            }
+          }),
     );
   }
 }

@@ -33,14 +33,11 @@ class EventsProvider extends ChangeNotifier {
 
   Future<void> _fetchEvents() async {
     _isLoading = true;
-    loadEventsFromDatabase(_events, _errorMessage);
-    _isLoading = false;
-    notifyListeners();
+    await loadEventsFromDatabase(_events, _errorMessage);
   }
 
   Future<void> _fetchTags() async {
-    _isLoading = true;
-    loadTagsFromDatabase(_tags, _errorMessage);
+    await loadTagsFromDatabase(_tags, _errorMessage);
     _isLoading = false;
     notifyListeners();
   }
