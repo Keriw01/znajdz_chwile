@@ -12,7 +12,7 @@ The app also allows you to delete and edit events, giving you the flexibility to
 
 "Znajdź Chwilę" also provides useful statistics for the current user. You can track your daily progress, monthly progress and overall progress. In addition, the application allows you to categorize events using three different types of tags, which allows you to analyze statistics based on these categories.
 
-![image](https://github.com/Keriw01/znajdz_chwile/assets/61714123/eebbba8b-64fa-4392-ba33-0126c302c28c)
+![znajdzChwile](https://github.com/Keriw01/znajdz_chwile/assets/61714123/adaebf9a-ce20-4ebf-83d9-88bf8e160b43)
 
 
 #### More information on:
